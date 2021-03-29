@@ -4,7 +4,9 @@ import router from './router'
 import './plugins/element.js'
 import './assets/css/global.css'
 import axios from 'axios'
-// import { config } from 'vue/types/umd'
+//引入semantic-ui
+// import semantic from 'semantic-ui-vue';
+// import 'semantic-ui-css/semantic.min.css';
 
 //配置请求的根路径
 axios.defaults.baseURL = 'http://localhost:8080/'
@@ -22,3 +24,4 @@ new Vue({
   router,
   render: h => h(App)
 }).$mount('#app')
+
