@@ -95,15 +95,45 @@ export default {
     },
     //获取所有的菜单
     async getMenuList() {
-      const result = await this.$http.get('menus')
-      // const { data: result } = await this.$http.get('menus')
-      //若数据获取不成功，显示提示信息
-      if (result.status != 200) {
-        return this.$message.error(result.message);
-      }
-      //若数据获取成功，则提取返回的菜单列表数据s
-      this.menuList = result.data.data
-      console.log(this.menuList)
+      // const result = await this.$http.get('menus')
+      // //若数据获取不成功，显示提示信息
+      // if (result.status != 200) {
+      //   return this.$message.error(result.message);
+      // }
+      // //若数据获取成功，则提取返回的菜单列表数据s
+      // this.menuList = result.data.data
+      // console.log(this.menuList)
+
+
+      var mockData = [
+        { id: 1, 
+          authName: '用户管理', 
+          path: 'user', 
+          children: [ { id: 1, authName: '用户列表', path: 'user'}] },
+        { id: 2, 
+          authName: '权限管理', 
+          path: 'right', 
+          children: [ { id: 1, authName: '角色列表', path: 'role'}, 
+                      { id: 2, authName: '权限列表', path: 'permission'}] },
+        { id: 3, 
+          authName: '商品管理', 
+          path: 'goods', 
+          children: [ { id: 1, authName: '商品管理1', path: 'goods1'}, 
+                      { id: 2, authName: '商品管理2', path: 'goods2'}, 
+                      { id: 3, authName: '商品管理3', path: 'goods3'}] },
+        { id: 4, 
+          authName: '订单管理', 
+          path: 'order', 
+          children: [ { id: 1, authName: '订单管理1', path: 'order1'}, 
+                      { id: 2, authName: '订单管理2', path: 'order2'}] },
+        { id: 5, 
+          authName: '数据统计', 
+          path: 'report', 
+          children: [ { id: 1, authName: '数据统计1', path: 'report1'}, 
+                      { id: 2, authName: '数据统计2', path: 'report2'},
+                      { id: 3, authName: '数据统计3', path: 'report3'}] }
+      ]
+      this.menuList = mockData
     },
     //点击按钮，切换菜单的折叠与展开
     toggleCollapse() {

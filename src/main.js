@@ -9,7 +9,7 @@ import axios from 'axios'
 // import 'semantic-ui-css/semantic.min.css';
 
 //配置请求的根路径
-axios.defaults.baseURL = 'http://localhost:8080/'
+axios.defaults.baseURL = 'http://localhost:9003/'
 // 设置路由拦截器，在请求头中加入Authorization字段用于鉴权
 axios.interceptors.request.use(config => {
   console.log(config)

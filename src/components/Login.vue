@@ -25,13 +25,15 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data() {
     return {
       //登陆表单数据对象绑定
       loginForm: {
-          username: '大西瓜',
-          password: '123'
+          username: 'test_管理员33',
+          password: 'string'
       },
       //表单验证规则
       loginFormRules: {
@@ -56,17 +58,32 @@ export default {
     },
     login() {
       this.$refs.loginFormRef.validate(async (valid) => {
-          console.log(valid);
           if (!valid) return;
+          var user = {
+            id: 0,
+            name: this.loginForm.username,
+            password: this.loginForm.password,
+            roleId: 0,
+            idNumber: '',
+            role: null
+          }
           //使用await简化promise操作,await关键字仅能在异步函数中使用，因此该函数前加async修饰 
-          const { data: result } = await this.$http.post('login', this.loginForm); 
+          const { data: result } = await this.$http.post('/user-manager/user/login', user); 
           console.log(result);
+          // var result
+          // axios.post('http://localhost:9003/user-manager/user/login', user)
+          // .then((res) => {
+          //   console.log(res)
+          //   result = res.data
+          // });
           if (result.status != 200) {
             return this.$message.error('登陆失败');
           }
           this.$message.success('登陆成功');
           //登陆成功后将通过sessionStorage的方式将token保存下来
-          window.sessionStorage.setItem("token",result.token);
+          // window.sessionStorage.setItem("token",result.token);
+          //调试状态，伪装token
+          window.sessionStorage.setItem("token",'ASYOUCANSEETHISISAFAKETOKENJUSTFORTEST');
           //登陆后通过编程式导航跳转到后台主页，路由地址为：/home
           this.$router.push('/home')
       });

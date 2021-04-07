@@ -27,12 +27,12 @@
       <el-table :data="userList" stripe>
         <el-table-column label="序号" type="index"></el-table-column>
         <!-- <el-table-column label="编号" prop="id"></el-table-column> -->
-        <el-table-column label="姓名" prop="username"></el-table-column>
-        <el-table-column label="角色" prop="roleName"></el-table-column>
-        <el-table-column label="电话" prop="mobile"></el-table-column>
+        <el-table-column label="姓名" prop="name"></el-table-column>
+        <el-table-column label="角色" prop="role.name"></el-table-column>
+        <el-table-column label="编号" prop="idNumber"></el-table-column>
         <el-table-column label="状态">
           <template v-slot="scope">
-            <el-switch active-color="#7cf3c1" v-model="scope.row.status" @change="userStateChanged(scope.row.status)"></el-switch>
+            <el-switch active-color="#13ce66" v-model="scope.row.status" @change="userStateChanged(scope.row.status)"></el-switch>
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
@@ -41,13 +41,13 @@
             <el-tooltip class="item" effect="dark" content="修改信息" placement="top" :enterable="false">
               <el-button type="success" icon="el-icon-edit"  size="small" @click="showEditDialog(scope.row.id)"></el-button>
             </el-tooltip>
-            <!-- 权限分配 -->
-            <el-tooltip class="item" effect="dark" content="权限分配" placement="top" :enterable="false">
-              <el-button type="warning" icon="el-icon-setting"  size="small"></el-button>
+            <!-- 角色分配 -->
+            <el-tooltip class="item" effect="dark" content="角色分配" placement="top" :enterable="false">
+              <el-button type="warning" icon="el-icon-setting"  size="small" @click="setRole(scope.row)"></el-button>
             </el-tooltip>
             <!-- 删除 -->
             <el-tooltip class="item" effect="dark" content="删除" placement="top" :enterable="false">
-              <el-button type="danger" icon="el-icon-delete"  size="small"></el-button>
+              <el-button type="danger" icon="el-icon-delete"  size="small" @click="removeUserById(scope.row.id)"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -57,7 +57,7 @@
       <el-pagination
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="queryInfo.pageNum"
+        :current-page="queryInfo.startPage"
         :page-sizes="[3, 5, 10, 20]"
         :page-size="queryInfo.pageSize"
         layout="total, sizes, prev, pager, next, jumper"
@@ -113,6 +113,30 @@
       </span>
     </el-dialog>
 
+    <el-dialog
+      title="角色分配"
+      :visible.sync="setRoleDialogVisible"
+      width="50%" @close="setRoleDialogClosed">
+      <div>
+        <p>当前用户：{{userInfo.name}}</p>
+        <p>当前角色: {{roleInfo.name}}</p>
+        <p>分配新角色：
+          <el-select v-model="selectedRoleId" placeholder="请选择">
+            <el-option
+              v-for="item in roleList"
+              :key="item.Id"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
+        </p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="grantRole()">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -141,7 +165,7 @@ export default {
       //获取用户列表参数对象
       queryInfo: {
           query: '',
-          pageNum: 1,
+          startPage: 1,
           pageSize: 3
       },
       userList: [],
@@ -188,7 +212,15 @@ export default {
       //是否显示修改用户对话框
       editDialogVisible: false,
       //查询到的用户信息对象
-      editForm: {}
+      editForm: {},
+      //是否显示角色分配对话框
+      setRoleDialogVisible: false,
+      //待分配角色的用户信息
+      userInfo: {},
+      roleInfo: {},
+      roleList: [],
+      //存储被选中的角色id
+      selectedRoleId: ''
     }
   },
   created() {
@@ -196,23 +228,21 @@ export default {
   },
   methods: {
     async getUserList() {
-        const result = await this.$http.get('users', { params: this.queryInfo })
+        const result = await this.$http.get('/user-manager/admin/listUser', { params: this.queryInfo })
         if (result.status != 200) {
           return this.$message.error('获取用户列表失败')
         }
-        this.userList = result.data.data.users
-        this.total = result.data.total
-        console.log(this.userList)
+        this.userList = result.data.data.list
+        this.total = result.data.data.total
     },
     //监听pageSize改变的事件
     handleSizeChange(newSize) {
       this.queryInfo.pageSize = newSize
       this.getUserList()
     },
-    //监听pageNum改变事件
+    //监听startPage改变事件
     handleCurrentChange(newPage) {
-      console.log(newPage)
-      this.queryInfo.pageNum = newPage
+      this.queryInfo.startPage = newPage
       this.getUserList()
     },
     //监听swich开关状态的改变
@@ -249,7 +279,6 @@ export default {
         return this.$message.error('查询用户信息失败')
       }
       this.editForm = result.data
-      console.log(this.editForm)
       this.editDialogVisible = true
     },
     editDialogClosed() {
@@ -274,6 +303,54 @@ export default {
         //提升修改用户信息成功
         this.$message.success('更新用户信息成功！')
       })
+    },
+    //根据id删除对应的id信息
+    async removeUserById(id) {
+      const result = await this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(error => error)
+
+      //若用户确认删除，则返回confirm
+      //若用户取消删除，则返回cancel
+      if (confirm !== 'confirm') {
+        return this.$message.info('取消删除')
+      }
+      
+      const result2 = await this.$http.delete('user?id=' + id)
+      if (result2 != 200){
+        return this.$message.error('删除用户失败')
+      }
+      this.$message.success('成功删除用户')
+      this.getUserList()
+    },
+    async setRole(userInfo) {
+      this.userInfo = userInfo
+      this.roleInfo = userInfo.role
+      const result = await this.$http.get('/user-manager/admin/listAllRole')
+      this.roleList = result.data.data
+      this.setRoleDialogVisible = true
+    },
+    async grantRole() {
+      if (!this.selectedRoleId){
+        return this.$message.error('请选择要分配的角色！')
+      }
+      var user = this.userInfo
+      user.roleId = this.selectedRoleId
+      user.role.id = this.selectedRoleId
+      const result = await this.$http.put('/user-manager/admin/updateUser', user)
+      if (result.status != 200) {
+        return this.$message.error('更改用户角色失败！')
+      }
+      this.$message.success('更改用户角色成功！')
+      this.setRoleDialogVisible = false
+      this.getUserList()
+    },
+    //监听角色分配对话框的关闭事件
+    setRoleDialogClosed() {
+      this.selectedRoleId = ''
+      this.userInfo = {}
     }
   }
 }
