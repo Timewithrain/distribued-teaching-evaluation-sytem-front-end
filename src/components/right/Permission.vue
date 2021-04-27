@@ -14,6 +14,11 @@
         <el-table-column label="权限名称" prop="name"></el-table-column>
         <el-table-column label="路径" prop="url"></el-table-column>
         <el-table-column label="权限" prop="perms"></el-table-column>
+        <el-table-column label="操作" width="120px">
+          <template v-slot="scope">
+            <el-button type="success" icon="el-icon-edit" size="small" @click="showEditDialog(scope.row)">编辑</el-button>
+          </template>
+        </el-table-column>
       </el-table>
 
       <!-- 分页区域 -->
@@ -27,19 +32,50 @@
         :total="total">
       </el-pagination>
     </el-card>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="editDialogVisible"
+      width="50%" 
+      @close="editDialogVisible = false">
+      <!-- 内容主体区域 -->
+      <el-form :model="editForm" ref="editFormRef" label-width="70px" >
+        <el-form-item label="权限名称" prop="name">
+          <el-input v-model="editForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="访问路径" prop="url">
+          <el-input v-model="editForm.url"></el-input>
+        </el-form-item>
+        <el-form-item label="权限" prop="perms">
+          <el-input v-model="editForm.perms"></el-input>
+        </el-form-item>
+        <el-form-item label="类型" prop="type">
+          <el-input v-model="editForm.type"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editPermission()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   data() {
     return {
       permList: [],
       total: 23,
       startPage: 1,
-      pageSize: 10
+      pageSize: 10,
+      editDialogVisible: false,
+      editForm: {
+        name: '',
+        url: '',
+        perms: '',
+        type: ''
+      },
     }
   },
   created (){
@@ -60,7 +96,6 @@ export default {
       }
       this.permList = result.data.data.list
       this.total = result.data.data.total
-      console.log(result)
     },
     //监听pageSize改变的事件
     handleSizeChange(newSize) {
@@ -72,6 +107,15 @@ export default {
       this.startPage = newPage
       this.getPermissionList()
     },
+    showEditDialog(perm) {
+      this.editForm = perm
+      this.editDialogVisible = true
+    },
+    async editPermission() {
+      const result2 = await this.$http.put('/user-manager/admin/updatePerms', this.editForm)
+      this.getPermissionList()
+      this.editDialogVisible = false
+    }
   }
 }
 </script>

@@ -271,14 +271,13 @@ export default {
     },
     //显示修改用户对话框
     async showEditDialog(id) {
-      console.log(id)
       //通过id从后台获取数据进行显示
-      const result = await this.$http.get('user?id='+id)
-      
+      const result = await this.$http.get('/user-manager/admin/getUserById?id='+id)
       if (result.status != 200) {
         return this.$message.error('查询用户信息失败')
       }
-      this.editForm = result.data
+      console.log(result)
+      this.editForm = result.data.data
       this.editDialogVisible = true
     },
     editDialogClosed() {

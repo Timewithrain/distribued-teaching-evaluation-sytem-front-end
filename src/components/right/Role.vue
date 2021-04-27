@@ -45,9 +45,8 @@
         <el-table-column label="角色名称" prop="name"></el-table-column>
         <el-table-column label="操作" width="300px">
           <template v-slot="scope">
-            <el-button type="success" icon="el-icon-edit" size="small" v-model="scope.row.id">编辑</el-button>
             <el-button type="warning" icon="el-icon-setting" size="small" @click="showSetPermsDialog(scope.row.id)">分配权限</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="small">删除</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="small" @click="showDeleteRoleDialog(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -150,6 +149,18 @@ export default {
       this.$message.success('分配权限成功！')
       this.getRoleList()
       this.setPermsDialogVisible = false
+    },
+    async showDeleteRoleDialog(roleId) {
+      const result = await this.$confirm('此操作将彻底删除该角色，是否继续？','提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).catch(err => err)
+      if (result!='confirm' ) {
+        return this.$message.info('取消权限删除操作')
+      }
+
+      this.$message.error('方法尚未实现删除-_-!!')
     }
   }
 }

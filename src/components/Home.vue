@@ -87,9 +87,14 @@ export default {
     this.activePath = window.sessionStorage.getItem('activePath')
   },
   methods: {
-    logout() {
+    async logout() {
       //点击退出后，清除token，并返回至登陆页面
       window.sessionStorage.clear();
+      const result = await this.$http.get('/user-manager/user/logout');
+      console.log(result)
+      if (result.status != 200){
+        return this.$message.error('退出状态异常！');
+      }
       this.$router.push('/login');
       this.$message.success('已退出系统');
     },
@@ -116,22 +121,22 @@ export default {
           children: [ { id: 1, authName: '角色列表', path: 'role'}, 
                       { id: 2, authName: '权限列表', path: 'permission'}] },
         { id: 3, 
-          authName: '商品管理', 
-          path: 'goods', 
-          children: [ { id: 1, authName: '商品管理1', path: 'goods1'}, 
-                      { id: 2, authName: '商品管理2', path: 'goods2'}, 
-                      { id: 3, authName: '商品管理3', path: 'goods3'}] },
+          authName: '课程管理', 
+          path: 'courseManage', 
+          children: [ { id: 1, authName: '班级管理', path: 'category'}, 
+                      { id: 2, authName: '课程管理', path: 'courseManage'}, 
+                      { id: 3, authName: '学院管理', path: 'department'}] },
         { id: 4, 
-          authName: '订单管理', 
-          path: 'order', 
-          children: [ { id: 1, authName: '订单管理1', path: 'order1'}, 
-                      { id: 2, authName: '订单管理2', path: 'order2'}] },
+          authName: '班级管理', 
+          path: 'class', 
+          children: [ { id: 1, authName: '班级管理1', path: 'class1'}, 
+                      { id: 2, authName: '班级管理2', path: 'class2'}] },
         { id: 5, 
-          authName: '数据统计', 
-          path: 'report', 
-          children: [ { id: 1, authName: '数据统计1', path: 'report1'}, 
-                      { id: 2, authName: '数据统计2', path: 'report2'},
-                      { id: 3, authName: '数据统计3', path: 'report3'}] }
+          authName: '教学评估', 
+          path: 'evaluation', 
+          children: [ { id: 1, authName: '教学评估1', path: 'evaluate1'}, 
+                      { id: 2, authName: '教学评估2', path: 'evaluate2'},
+                      { id: 3, authName: '教学评估3', path: 'evaluate3'}] }
       ]
       this.menuList = mockData
     },
