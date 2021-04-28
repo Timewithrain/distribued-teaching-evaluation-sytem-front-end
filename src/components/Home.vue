@@ -124,7 +124,7 @@ export default {
           authName: '课程管理', 
           path: 'courseManage', 
           children: [ { id: 1, authName: '班级管理', path: 'category'}, 
-                      { id: 2, authName: '课程管理', path: 'courseManage'}, 
+                      { id: 2, authName: '课程管理', path: 'course'}, 
                       { id: 3, authName: '学院管理', path: 'department'}] },
         { id: 4, 
           authName: '班级管理', 

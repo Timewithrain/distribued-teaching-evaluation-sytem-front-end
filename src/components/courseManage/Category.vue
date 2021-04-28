@@ -329,12 +329,12 @@ export default {
         if (result.status!=200){
           return this.$message.error('添加班级信息失败！')
         }
+        this.$message.success('添加班级信息成功！')
+        this.$refs.addClassFormRef.resetFields()
+        this.addClassForm.department = {}
+        this.addClassDialogVisible = false
+        this.getClassList()
       })
-      this.$message.success('添加班级信息成功！')
-      this.$refs.addClassFormRef.resetFields()
-      this.addClassForm.department = {}
-      this.addClassDialogVisible = false
-      this.getClassList()
     },
     showEditClassDialog(aClass){
       this.editClassForm = aClass
