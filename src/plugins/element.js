@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { Button, Form, FormItem, Input, Message, Container, Header, Aside, Main, Switch } from "element-ui";
 import { Menu, MenuItem, Submenu, Breadcrumb, BreadcrumbItem, Card, Row, Col, Table, TableColumn } from "element-ui";
-import { Tooltip, Pagination, Dialog, MessageBox, Tag, Tree, Select, Option } from "element-ui"
+import { Tooltip, Pagination, Dialog, MessageBox, Tag, Tree, Select, Option, DatePicker, RadioGroup, RadioButton } from "element-ui"
 
 Vue.use(Button)
 Vue.use(Form)
@@ -29,6 +29,9 @@ Vue.use(Tag)
 Vue.use(Tree)
 Vue.use(Select)
 Vue.use(Option)
+Vue.use(DatePicker)
+Vue.use(RadioGroup)
+Vue.use(RadioButton)
 //将弹框组件挂载至Vue的原型对象上
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

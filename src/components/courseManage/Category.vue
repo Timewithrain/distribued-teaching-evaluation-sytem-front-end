@@ -9,19 +9,38 @@
 
     <!-- 主内容区域 -->
     <el-card>
-      <el-row>
-        <el-col>
+      <el-row :gutter="20">
+        <el-col :span="3">
           <el-button type="primary" @click="showAddClassDialog">添加班级</el-button>
+        </el-col>
+        <el-col :span="17" style="margin-left: 80px">
+          <!-- 搜索栏 -->
+          <el-form :inline="true" :model="searchForm" class="demo-form-inline" style="width: 780px;">
+            <el-form-item label="专业">
+              <el-input v-model="searchForm.str" placeholder="请输入专业名"></el-input>
+            </el-form-item>
+            <el-form-item label="年级">
+              <el-select v-model="searchForm.grade" placeholder="请选择" style="width: 120px" clearable>
+                <el-option v-for="item in gradeList" :key="item"
+                  :label="item" :value="item">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="学院">
+              <el-select v-model="searchForm.departmentId" placeholder="请选择" style="width: 200px" clearable>
+                <el-option v-for="item in departmentList" :key="item.id"
+                  :label="item.name" :value="item.id">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" plain @click="getClassList">查询</el-button>
+            </el-form-item>
+          </el-form>
         </el-col>
       </el-row>
 
-      <!-- 表格 -->
-      <!-- <tree-table :data="classList" :columns="columns" :selection-type="false" show-index>
-        <template v-slot:operate="scope">
-          <el-button type="warning" icon="el-tag-edit" @click="showEditDialog(scope.row.id)">修改</el-button>
-          <el-button type="danger" icon="el-tag-delete" @click="showDeleteDialog(scope.row.id)">删除</el-button>
-        </template>
-      </tree-table> -->
+      
       <el-table class="class-table" :data="classList" style="width: 100%;margin-bottom: 20px;" row-key="id">
       <!-- <el-table :data="classList" style="width: 100%;margin-bottom: 20px;" row-key="id"
         :tree-props="{children: 'courseList', hasChildren: 'true'}"> -->
@@ -218,7 +237,7 @@ export default {
   data (){
     return {
       //班级分页信息
-      pageSize: 3,
+      pageSize: 5,
       startPage: 1,
       total: 0,
       //课程分页信息
@@ -232,12 +251,19 @@ export default {
       teacher: {},
       classInfo: '',
       classList: [],
+      gradeList: [],
       departmentList: [],
       courseList: [],
       teacherList: [],
       addClassDialogVisible: false,
       editClassDialogVisible: false,
       addClassCourseDialogVisible: false,
+      //搜索框表单数据对象
+      searchForm: {
+        str: '',
+        grade: '',
+        departmentId: ''
+      },
       //添加班级的表单数据对象
       addClassForm: {
         //将要添加的班级名称、年级、班号、学院
@@ -263,11 +289,14 @@ export default {
   },
   created() {
     this.getClassList()
+    this.getAllDepartmentList()
+    this.getAllGradeList()
   },
   methods: {
     //获取班级数据
     async getClassList() {
-      const result = await this.$http.get('/course-manager/class/listClass?pageSize='+this.pageSize+'&startPage='+this.startPage)
+      const result = await this.$http.get('/course-manager/class/searchClass?pageSize='+this.pageSize+'&startPage='+this.startPage+
+      '&str='+this.searchForm.str+'&grade='+this.searchForm.grade+'&departmentId='+this.searchForm.departmentId)
       if (result.status != 200){
         return this.$message.error('获取课程列表失败！')
       }
@@ -298,6 +327,13 @@ export default {
           return this.$message.error('获取教师信息失败！')
         }
       this.teacherList = result.data.data
+    },
+    async getAllGradeList() {
+      const result = await this.$http.get('/course-manager/class/listAllGrade')
+        if (result.status!=200){
+          return this.$message.error('获取教师信息失败！')
+        }
+      this.gradeList = result.data.data
     },
     //监听 pageSize改变
     handleSizeChange(newSize) {
@@ -338,8 +374,6 @@ export default {
     },
     showEditClassDialog(aClass){
       this.editClassForm = aClass
-      //修改班级前先获取学院信息
-      this.getAllDepartmentList()
       this.editClassDialogVisible = true
       
     },

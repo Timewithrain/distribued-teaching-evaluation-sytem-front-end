@@ -321,9 +321,9 @@ export default {
       //提交删除请求
       const result2 = await this.$http.delete('/course-manager/courseManage/deleteCourse?id='+course.id)
       if (result2.status!=200){
-        return this.$message.error('删除班级操作失败！')
+        return this.$message.error('删除课程操作失败！')
       }
-      this.$message.success('成功删除班级!')
+      this.$message.success('成功删除课程!')
       this.getCourseList()
     }
   }

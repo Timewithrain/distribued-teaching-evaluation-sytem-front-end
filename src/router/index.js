@@ -8,6 +8,9 @@ import Permission from '../components/right/Permission.vue'
 import Role from '../components/right/Role.vue'
 import Category from '../components/courseManage/Category.vue'
 import Course from '../components/courseManage/Course.vue'
+import Department from '../components/courseManage/Department.vue'
+import Teacher from '../components/user/Teacher.vue'
+import Supervisor from '../components/user/Supervisor.vue'
 // import { component } from 'vue/types/umd'
 
 Vue.use(Router)
@@ -21,10 +24,13 @@ const routes = [
     children: [ 
       { path: '/welcome', component: Welcome }, 
       { path: '/user', component: Users },
+      { path: '/teacher', component: Teacher },
+      { path: '/supervisor', component: Supervisor },
       { path: '/permission', component: Permission },
       { path: '/role', component: Role },
       { path: '/category', component: Category},
-      { path: '/course', component: Course}
+      { path: '/course', component: Course},
+      { path: '/department', component: Department}
     ] 
   }
 ]
