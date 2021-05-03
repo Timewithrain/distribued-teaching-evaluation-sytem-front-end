@@ -11,6 +11,8 @@ import Course from '../components/courseManage/Course.vue'
 import Department from '../components/courseManage/Department.vue'
 import Teacher from '../components/user/Teacher.vue'
 import Supervisor from '../components/user/Supervisor.vue'
+import Student from '../components/user/Student.vue'
+import EvaluationItem from '../components/evaluation/EvaluationItem.vue'
 // import { component } from 'vue/types/umd'
 
 Vue.use(Router)
@@ -26,11 +28,13 @@ const routes = [
       { path: '/user', component: Users },
       { path: '/teacher', component: Teacher },
       { path: '/supervisor', component: Supervisor },
+      { path: '/student', component: Student },
       { path: '/permission', component: Permission },
       { path: '/role', component: Role },
       { path: '/category', component: Category},
       { path: '/course', component: Course},
-      { path: '/department', component: Department}
+      { path: '/department', component: Department},
+      { path: '/evaluationItem', component: EvaluationItem}
     ] 
   }
 ]

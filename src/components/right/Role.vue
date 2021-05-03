@@ -11,7 +11,7 @@
       <!-- 添加角色按钮 -->
       <el-row>
         <el-col>
-          <el-button type="success">添加角色</el-button>
+          <el-button type="success" @click="showAddRoleDialog">添加角色</el-button>
         </el-col>
       </el-row>
 
@@ -44,18 +44,38 @@
         <el-table-column type="index"></el-table-column>
         <el-table-column label="角色名称" prop="name"></el-table-column>
         <el-table-column label="操作" width="300px">
-          <template v-slot="scope">
-            <el-button type="warning" icon="el-icon-setting" size="small" @click="showSetPermsDialog(scope.row.id)">分配权限</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="small" @click="showDeleteRoleDialog(scope.row.id)">删除</el-button>
+          <template v-slot="scope2">
+            <el-button type="warning" icon="el-icon-setting" size="small" @click="showSetPermsDialog(scope2.row.id)">分配权限</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="small" @click="showDeleteRoleDialog(scope2.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
+
+      <el-pagination
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :current-page="this.startPage"
+        :page-sizes="[3, 5, 10, 20]"
+        :page-size="this.pageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="this.total">
+      </el-pagination>
     </el-card>
 
-    <el-dialog
-      title="权限分配"
-      :visible.sync="setPermsDialogVisible"
-      width="50%">
+    <!-- 添加角色对话框 -->
+    <el-dialog title="添加角色" :visible.sync="addRoleDialogVisible" width="50%">
+      <el-form :inline="true" :model="addRoleForm" :rules="addRoleFormRules" ref="addRoleFormRef" label-width="100px">
+        <el-form-item label="角色名:" prop="name" style="margin-left: 10px;">
+          <el-input v-model="addRoleForm.name" style="width: 150px;"></el-input>
+        </el-form-item>        
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="closeAddRoleDialog">取 消</el-button>
+        <el-button type="primary" @click="submitAddRole">添 加</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog title="权限分配" :visible.sync="setPermsDialogVisible" width="50%">
       <el-tree :data="permsList" :props="treeProps" node-key="id" :default-checked-keys="defaultKey" ref="treeRef" show-checkbox></el-tree>
       <span slot="footer" class="dialog-footer">
         <el-button @click="setPermsDialogVisible = false">取 消</el-button>
@@ -67,19 +87,26 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   data() {
     return {
       //所有角色的列表数据
       roleList: [],
-      pageSize: 3,
-      startPage: 1,
-      total: 4,
-      //控制权限分配对话框的显示与保存
-      setPermsDialogVisible: false,
       permsList: [],
+      pageSize: 5,
+      startPage: 1,
+      total: 0,
+      //控制添加角色对话框的显示与隐藏
+      addRoleDialogVisible: false,
+      //控制权限分配对话框的显示与隐藏
+      setPermsDialogVisible: false,
+      addRoleForm: {
+        id: '',
+        name: ''
+      },
+      addRoleFormRules: {
+        name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
+        },
       treeProps: {
         label: 'url',
       },
@@ -99,7 +126,37 @@ export default {
       if (result.status != 200) {
         return this.$message.error('获取角色列表失败！');
       }
-      this.roleList = result.data.data
+      this.roleList = result.data.data.list
+      this.total = result.data.data.total
+    },
+    handleSizeChange(newSize) {
+      this.pageSize = newSize
+      this.getRoleList()
+    },
+    handleCurrentChange(newPage) {
+      this.startPage = newPage
+      this.getRoleList()
+    },
+    showAddRoleDialog() {
+      this.addRoleDialogVisible = true
+    },
+    submitAddRole() {
+      this.$refs.addRoleFormRef.validate(async valid => {
+        //验证不通过直接返回
+        if (!valid) return this.$message.error('请完整填写角色信息！')
+        const result = await this.$http.post('/user-manager/admin/addRole', this.addRoleForm)
+        if (result.status!=200){
+          return this.$message.error('添加角色失败！')
+        }
+        this.$message.success('成功添加角色！')
+        this.$refs.addRoleFormRef.resetFields()
+        this.addRoleDialogVisible = false
+        this.getRoleList()
+      })
+    },
+    closeAddRoleDialog() {
+      this.addRoleDialogVisible = false
+      this.$refs.addRoleFormRef.resetFields()
     },
     async removePermOfRole(roleId, permId) {
       //获取角色Id及其对应的权限Id用以删除其映射关系
@@ -142,7 +199,9 @@ export default {
       const keys = [ ...this.$refs.treeRef.getCheckedKeys() ]
       console.log(keys)
       const idStr = keys.join(',')
-      const result = await this.$http.post('/user-manager/admin/updateRolePerms', {roleId: this.roleId, perms: idStr})
+      console.log(this.roleId)
+      console.log(idStr)
+      const result = await this.$http.put('/user-manager/admin/updateRolePerms?roleId='+this.roleId+'&perms='+idStr)
       if (result.status != 200) {
         return this.$$message.error('更新权限失败！')
       }
@@ -159,8 +218,12 @@ export default {
       if (result!='confirm' ) {
         return this.$message.info('取消权限删除操作')
       }
-
-      this.$message.error('方法尚未实现删除-_-!!')
+      const result2 = await this.$http.delete('/user-manager/admin/deleteRole?id='+roleId)
+      if (result2.status!=200){
+        return this.$message.error('删除角色失败！')
+      }
+      this.$message.success('成功删除角色!')
+      this.getRoleList()
     }
   }
 }

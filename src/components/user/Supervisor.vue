@@ -15,7 +15,7 @@
         <el-col :span="15" style="margin-left: 150px">
           <el-form :inline="true" :model="searchForm" class="demo-form-inline" style="width: 350px; margin-left: 250px">
             <el-form-item label="姓名">
-              <el-input v-model="searchForm.str" placeholder="请输入督导姓名" clearable="true"></el-input>
+              <el-input v-model="searchForm.str" placeholder="请输入督导姓名" :clearable="true"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" plain @click="getSupervisorList">查询</el-button>

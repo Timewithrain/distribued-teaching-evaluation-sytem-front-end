@@ -130,14 +130,9 @@ export default {
                       { id: 2, authName: '课程管理', path: 'course'}, 
                       { id: 3, authName: '学院管理', path: 'department'}] },
         { id: 4, 
-          authName: '班级管理', 
-          path: 'class', 
-          children: [ { id: 1, authName: '班级管理1', path: 'class1'}, 
-                      { id: 2, authName: '班级管理2', path: 'class2'}] },
-        { id: 5, 
           authName: '教学评估', 
           path: 'evaluation', 
-          children: [ { id: 1, authName: '教学评估1', path: 'evaluate1'}, 
+          children: [ { id: 1, authName: '评价管理', path: 'evaluationItem'}, 
                       { id: 2, authName: '教学评估2', path: 'evaluate2'},
                       { id: 3, authName: '教学评估3', path: 'evaluate3'}] }
       ]

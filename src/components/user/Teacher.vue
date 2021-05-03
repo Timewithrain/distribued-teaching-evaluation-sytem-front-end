@@ -17,7 +17,7 @@
         <el-col :span="15" style="margin-left: 150px">
           <el-form :inline="true" :model="searchForm" class="demo-form-inline" style="width: 600px;">
             <el-form-item label="姓名">
-              <el-input v-model="searchForm.str" placeholder="请输入教师姓名" clearable="true"></el-input>
+              <el-input v-model="searchForm.str" placeholder="请输入教师姓名" clearable></el-input>
             </el-form-item>
             <el-form-item label="学院">
               <el-select v-model="searchForm.departmentId" placeholder="请选择" style="width: 200px" clearable>
@@ -40,7 +40,7 @@
         </el-table-column>
         <el-table-column prop="idNumber" label="工号" width="150">
         </el-table-column>
-        <el-table-column prop="gender" label="性别" width="70">
+        <el-table-column prop="gender" :formatter="genderFormat" label="性别" width="70">
         </el-table-column>
         <el-table-column prop="entranceDate" type="datetime" :formatter="dateFormat" label="入职日期" width="100">
         </el-table-column>
@@ -222,6 +222,11 @@ export default {
     handleCurrentChange(newPage) {
       this.startPage = newPage
       this.getTeacherList()
+    },
+    //性别信息格式化
+    genderFormat(row){
+      var dT=new Date(row.entranceDate);//row 表示一行数据, dateTime 表示要格式化的字段名称
+      return row.gender == 0 ? '男' : '女'
     },
     //时间格式化函数
     dateFormat(row){
