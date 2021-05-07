@@ -11,6 +11,8 @@ import TreeTable from 'vue-table-with-tree-grid'
 
 //配置请求的根路径
 axios.defaults.baseURL = 'http://localhost:9003/'
+//请求时携带cookie避免每次请求的session不同
+axios.defaults.withCredentials = true
 // 设置路由拦截器，在请求头中加入Authorization字段用于鉴权
 axios.interceptors.request.use(config => {
   console.log(config)

@@ -70,6 +70,7 @@ export default {
           //使用await简化promise操作,await关键字仅能在异步函数中使用，因此该函数前加async修饰 
           const { data: result } = await this.$http.post('/user-manager/user/login', user); 
           console.log(result);
+          const userInfo = result.data
           // var result
           // axios.post('http://localhost:9003/user-manager/user/login', user)
           // .then((res) => {
@@ -84,8 +85,26 @@ export default {
           // window.sessionStorage.setItem("token",result.token);
           //调试状态，伪装token
           window.sessionStorage.setItem("token",'ASYOUCANSEETHISISAFAKETOKENJUSTFORTEST');
-          //登陆后通过编程式导航跳转到后台主页，路由地址为：/home
-          this.$router.push('/home')
+          //，路由地址为：/home
+          /**
+           * 登陆后通过编程式导航跳转到后台主页
+           * 登录用户角色为管理员时，跳转至管理员页面，路由地址为：/home
+           * 角色为教师时跳转至教师页面，路由地址为：/teacher-home
+           * 角色为学生时跳转至学生页面，路由地址为：/student-home
+           * 角色为督导时跳转至督导页面，路由地址为：/supervisor-home
+           * 其余角色为预留页面，路由地址为：/other-home
+           */
+          if(userInfo.role.id==1){
+            this.$router.push('/home')
+          } else if(userInfo.role.id==2) {
+            this.$router.push({path: '/teacher-home', query:{user: JSON.stringify(userInfo)}})
+          } else if(userInfo.role.id==3) {
+            this.$router.push({path: '/student-home', query:{user: JSON.stringify(userInfo)}})
+          } else if(userInfo.role.id==4){
+            this.$router.push({path: '/supervisor-home', query:{user: JSON.stringify(userInfo)}})
+          } else {
+            this.$router.push('/other-home')
+          }
       });
     }
   }

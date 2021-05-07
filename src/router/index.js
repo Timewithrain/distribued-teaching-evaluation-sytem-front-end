@@ -13,6 +13,13 @@ import Teacher from '../components/user/Teacher.vue'
 import Supervisor from '../components/user/Supervisor.vue'
 import Student from '../components/user/Student.vue'
 import EvaluationItem from '../components/evaluation/EvaluationItem.vue'
+import TeacherHome from '../components/teacher/TeacherHome.vue'
+import TeacherInfo from '../components/teacher/TeacherInfo.vue'
+import TeacherEvaluation from '../components/teacher/TeacherEvaluation.vue'
+import StudentHome from '../components/student/StudentHome.vue'
+import StudentInfo from '../components/student/StudentInfo.vue'
+import StudentEvaluation from '../components/student/StudentEvaluation.vue'
+import SupervisorHome from '../components/supervisor/SupervisorHome.vue'
 // import { component } from 'vue/types/umd'
 
 Vue.use(Router)
@@ -35,6 +42,29 @@ const routes = [
       { path: '/course', component: Course},
       { path: '/department', component: Department},
       { path: '/evaluationItem', component: EvaluationItem}
+    ] 
+  },
+  { path: '/teacher-home', 
+    component: TeacherHome, 
+    // redirect: '/welcome',
+    children: [ 
+      { path: '/teacher-info', component: TeacherInfo },
+      { path: '/teacher-evaluation', component: TeacherEvaluation }
+    ] 
+  },
+  { path: '/student-home', 
+    component: StudentHome, 
+    // redirect: '/welcome',
+    children: [ 
+      { path: '/student-info', component: StudentInfo },
+      { path: '/student-evaluation', component: StudentEvaluation }
+    ] 
+  },
+  { path: '/supervisor-home', 
+    component: SupervisorHome, 
+    // redirect: '/welcome',
+    children: [ 
+      // { path: '/welcome', component: Welcome }
     ] 
   }
 ]

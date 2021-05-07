@@ -156,6 +156,7 @@ export default {
 #logo {
   width: 70px;
   height: 70px;
+  margin: 3px 10px;
 }
 .home-container {
   height: 100%;

@@ -173,8 +173,8 @@ export default {
       },
       //添加教师表单的验证规则
       addTeacherFormRules: {
-        name: [{ required: true, message: '请输入班级(专业)名称', trigger: 'blur' }],
-        idNumber: [{ required: true, message: '请输入班号', trigger: 'blur' }],
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        idNumber: [{ required: true, message: '请输入工号', trigger: 'blur' }],
         gender: [{ required: true, message: '请选择性别', trigger: 'blur' }],
         region: [{ required: true, message: '请输入籍贯', trigger: 'blur' }],
         birth: [{ required: true, message: '请选择出生时间', trigger: 'blur' }],
