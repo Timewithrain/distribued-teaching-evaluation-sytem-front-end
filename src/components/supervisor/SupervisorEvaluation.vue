@@ -1,23 +1,27 @@
 <template>
   <div>
     <el-breadcrumb separator-class="el-icon-arrow-right">
-      <el-breadcrumb-item :to="{ path: '/student-home' }">首页</el-breadcrumb-item>
+      <el-breadcrumb-item>首页</el-breadcrumb-item>
       <el-breadcrumb-item>教学评价</el-breadcrumb-item>
     </el-breadcrumb>
 
     <el-card>
-
       <el-tabs :tab-position="tabPosition" v-model="activeName" @tab-click="handleClick">
         <!-- 查看评价 -->
         <el-tab-pane label="查看评价" name="search" style="margin-left: 30px;">
           <el-table class="evaluation-table" :data="summaryEvaluationList" style="width: 100%;margin-bottom: 20px;" row-key="id">
             <el-table-column type="expand">
               <template v-slot="scope">
-                <!-- 个人评价子表 -->
+                <!-- 评价子表 -->
                 <div>
-                  <el-table :data="scope.row.studentEvaluationList" row-key="id">
-                    <el-table-column type="index" label="序号" width="70"></el-table-column>
-                    <el-table-column prop="advice" label="建议" width="650">
+                  <el-table :data="scope.row.supervisorEvaluationList.concat(scope.row.studentEvaluationList)" row-key="id">
+                    <el-table-column type="index" label="序号" width="60"></el-table-column>
+                    <el-table-column prop="advice" label="建议" width="600">
+                    </el-table-column>
+                    <el-table-column prop="roleId" label="角色" width="60">
+                      <template v-slot="scope2">
+                        {{scope2.row.roleId=='3' ? '学生' : '督导'}}
+                      </template>
                     </el-table-column>
                     <el-table-column prop="totalScore" label="评分" width="80">
                     </el-table-column>
@@ -131,11 +135,12 @@
 
   </div>
 </template>
+
 <script>
 export default {
   data() {
     return {
-      student: {},
+      supervisor: {},
       //评价页面分页参数
       startPage: 1,
       pageSize: 5,
@@ -144,16 +149,17 @@ export default {
       summaryStartPage: 1,
       summaryPageSize: 5,
       summaryTotal: 0,
-      //可评价的课程列表
+      //督导所督察的课程列表
       courseList: [],
       //评价标准列表
       evaluationItemList: [],
+      //总评列表
       summaryEvaluationList: [],
       //被评价的课程
       course: {},
       addEvaluationForm: {
         individualId: 0,
-        roleId: 3,
+        roleId: 4,
         //评价者id
         fromId: 0,
         //被评价的教师id
@@ -171,7 +177,7 @@ export default {
         //建议
         advice: ''
       },
-      //用于对v-model做动态绑定
+      //用于对评价实体的v-model做动态绑定
       scoreData: [
         { data: 0 },
         { data: 0 },
@@ -191,24 +197,24 @@ export default {
         score4: [ { type:"number" ,min: 10, max: 100, message: '请完整填写评价', trigger: 'blur' } ],
         score5: [ { type:"number" ,min: 10, max: 100, message: '请完整填写评价', trigger: 'blur' } ],
         score6: [ { type:"number" ,min: 10, max: 100, message: '请完整填写评价', trigger: 'blur' } ]
-      },
+      }
     }
   },
   created() {
-    this.getStudentInfo()
+    this.getSupervisorInfo()
   },
   methods: {
-    async getStudentInfo() {
-      const result = await this.$http.get('/user-manager/student/getStudent')
+    async getSupervisorInfo() {
+      const result = await this.$http.get('/user-manager/supervisor/getSupervisor')
       if (result.status != 200){
         return this.$message.error('获取个人信息失败！')
       }
       const s = result.data.data
       if (s) {
-        this.student = s
-        //根据学生信息获取对应的课程列表
+        this.supervisor = s
+        //根据督导信息获取对应的课程列表
         this.getCourseList()
-        //根据学生信息获取对应的总评列表
+        //根据督导信息获取对应的总评列表
         this.getSummaryEvaluationList()
       } else {
         //若无法获取学生信息则登陆超时，重新登陆
@@ -221,8 +227,9 @@ export default {
         this.$message.success('登陆超时，请重新登录');
       }
     },
+    //获取督导所督察的课程列表
     async getCourseList() {
-      const result = await this.$http.get('/course-manager/courseManage/listCourseByClassId?pageSize='+this.pageSize+'&startPage='+this.startPage+'&classId='+this.student.aclass.id)
+      const result = await this.$http.get('/user-manager/supervisor/listCourse?pageSize='+this.pageSize+'&startPage='+this.startPage+'&supervisorId='+this.supervisor.id)
         if (result.status!=200){
           return this.$message.error('获取课程信息失败！')
         }
@@ -237,16 +244,15 @@ export default {
       this.startPage = newPage
       this.getCourseList()
     },
-    //
     handleClick(tab, event) {
       //若选中了查看评价页面则重新加载评价列表
       if (tab.label=='查看评价') {
         this.getSummaryEvaluationList()
       }
     },
-    //获取班级总评价
+    //获取督导课程的总评价
     async getSummaryEvaluationList() {
-      const result = await this.$http.get('/evaluation-manager/evaluation/listSummaryEvaluationByClassId?pageSize='+this.summaryPageSize+'&startPage='+this.summaryStartPage+'&classId='+this.student.aclass.id)
+      const result = await this.$http.get('/evaluation-manager/evaluation/listSummaryEvaluationBySupervisorId?pageSize='+this.summaryPageSize+'&startPage='+this.summaryStartPage+'&supervisorId='+this.supervisor.id)
       if (result.status!=200){
         return this.$message.error('获取总评信息失败！')
       }
@@ -262,9 +268,9 @@ export default {
       this.summaryStartPage = newPage
       this.getSummaryEvaluationList()
     },
-    //获取评价标准项
+    //获取评价标准项目
     async getEvaluationItemList() {
-      const result = await this.$http.get('/evaluation-manager/evaluationItem/listItem?roleId='+this.student.roleId)
+      const result = await this.$http.get('/evaluation-manager/evaluationItem/listItem?roleId='+this.supervisor.roleId)
         if (result.status!=200){
           return this.$message.error('获取评价标准项失败！')
         }
@@ -288,8 +294,8 @@ export default {
                        this.addEvaluationForm.score4 * this.evaluationItemList[3].weight + this.addEvaluationForm.score5 * this.evaluationItemList[4].weight + this.addEvaluationForm.score6 * this.evaluationItemList[5].weight
       this.addEvaluationForm.totalScore = totalScore/totalWeight
       //获取信息
-      this.addEvaluationForm.roleId = this.student.roleId
-      this.addEvaluationForm.fromId = this.student.id
+      this.addEvaluationForm.roleId = this.supervisor.roleId
+      this.addEvaluationForm.fromId = this.supervisor.id
       this.addEvaluationForm.teacherId = this.course.teacher.id
       this.addEvaluationForm.courseId = this.course.id
     },
@@ -310,7 +316,7 @@ export default {
         //计算并生成评价
         this.assembleEvaluation()
         //提交修改信息
-        const result2 = await this.$http.post('/evaluation-manager/evaluation/addStudentIndividualEvaluation', this.addEvaluationForm)
+        const result2 = await this.$http.post('/evaluation-manager/evaluation/addSupervisorIndividualEvaluation', this.addEvaluationForm)
         if (result2.status!=200){
           return this.$message.error('提交评价失败！')
         }
@@ -328,7 +334,6 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
 .el-textarea .el-textarea__inner{ // 然后找到对应的类名，在这里将拉伸去掉即可
   resize: none;
 }

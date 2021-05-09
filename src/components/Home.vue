@@ -4,7 +4,7 @@
     <el-header>
       <div>
         <img id="logo" src="../assets/watermelon.png" alt="" />
-        <span>后台管理系统</span>
+        <h2>后台管理系统</h2>
       </div>
       <el-button type="info" @click="logout">退出</el-button>
     </el-header>
@@ -133,8 +133,7 @@ export default {
           authName: '教学评估', 
           path: 'evaluation', 
           children: [ { id: 1, authName: '评价管理', path: 'evaluationItem'}, 
-                      { id: 2, authName: '教学评估2', path: 'evaluate2'},
-                      { id: 3, authName: '教学评估3', path: 'evaluate3'}] }
+                      { id: 2, authName: '评价查看', path: 'evaluation'}] }
       ]
       this.menuList = mockData
     },

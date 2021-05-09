@@ -21,7 +21,7 @@
             <el-row :gutter="24">
               <el-col :span="12">
                 <el-form-item label="姓名:" prop="name" style="margin-left: 10px;">
-                  <el-input v-model="teacherInfoForm.name" :disabled="true" style="width: 300px"></el-input>
+                  <el-input v-model="teacherInfoForm.name" :disabled="!isEditable" style="width: 300px"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">

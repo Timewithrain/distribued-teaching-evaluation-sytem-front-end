@@ -13,6 +13,7 @@ import Teacher from '../components/user/Teacher.vue'
 import Supervisor from '../components/user/Supervisor.vue'
 import Student from '../components/user/Student.vue'
 import EvaluationItem from '../components/evaluation/EvaluationItem.vue'
+import Evaluation from '../components/evaluation/Evaluation.vue'
 import TeacherHome from '../components/teacher/TeacherHome.vue'
 import TeacherInfo from '../components/teacher/TeacherInfo.vue'
 import TeacherEvaluation from '../components/teacher/TeacherEvaluation.vue'
@@ -20,6 +21,9 @@ import StudentHome from '../components/student/StudentHome.vue'
 import StudentInfo from '../components/student/StudentInfo.vue'
 import StudentEvaluation from '../components/student/StudentEvaluation.vue'
 import SupervisorHome from '../components/supervisor/SupervisorHome.vue'
+import SupervisorInfo from '../components/supervisor/SupervisorInfo.vue'
+import SupervisorEvaluation from '../components/supervisor/SupervisorEvaluation.vue'
+import SupervisorCourseManage from '../components/supervisor/SupervisorCourseManage.vue'
 // import { component } from 'vue/types/umd'
 
 Vue.use(Router)
@@ -41,7 +45,8 @@ const routes = [
       { path: '/category', component: Category},
       { path: '/course', component: Course},
       { path: '/department', component: Department},
-      { path: '/evaluationItem', component: EvaluationItem}
+      { path: '/evaluationItem', component: EvaluationItem},
+      { path: '/evaluation', component: Evaluation}
     ] 
   },
   { path: '/teacher-home', 
@@ -64,7 +69,9 @@ const routes = [
     component: SupervisorHome, 
     // redirect: '/welcome',
     children: [ 
-      // { path: '/welcome', component: Welcome }
+      { path: '/supervisor-info', component: SupervisorInfo },
+      { path: '/supervisor-course-manage', component: SupervisorCourseManage },
+      { path: '/supervisor-evaluation', component: SupervisorEvaluation }
     ] 
   }
 ]

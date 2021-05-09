@@ -40,7 +40,7 @@ export default {
           //用户名验证
           username: [
               { required: true, message: '请输入用户名', trigger: 'blur' },
-              { min: 3, max: 20, message: '长度在3到20之间', trigger: 'blur' },
+              { min: 1, max: 20, message: '长度在3到20之间', trigger: 'blur' },
           ],
           //密码验证
           password: [
@@ -64,7 +64,7 @@ export default {
             name: this.loginForm.username,
             password: this.loginForm.password,
             roleId: 0,
-            idNumber: '',
+            idNumber: this.loginForm.username,
             role: null
           }
           //使用await简化promise操作,await关键字仅能在异步函数中使用，因此该函数前加async修饰 

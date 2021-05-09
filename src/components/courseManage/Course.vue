@@ -41,40 +41,43 @@
 
       <!-- 表格 -->
       <el-table class="class-table" :data="courseList" style="width: 100%;margin-bottom: 20px;" row-key="id">
-        <!-- <el-table-column type="expand">
+        <el-table-column type="expand" width="50">
           <template v-slot="scope">
-            <div>
-              <el-table :data="scope.row.courseList" row-key="id">
-                <el-table-column type="index"></el-table-column>
-                <el-table-column prop="name" label="课程名" width="180">
-                </el-table-column>
-                <el-table-column prop="number" label="课程号" width="150">
-                </el-table-column>
-                <el-table-column prop="teacher.name" label="教师" width="150">
-                </el-table-column>
-                <el-table-column prop="score" label="学分" width="120">
-                </el-table-column>
-                <el-table-column prop="courseClass" label="类型" width="120">
-                </el-table-column>
-                <el-table-column prop="operate" label="操作" width="100">
-                  <template v-slot="scope2">
-                    <el-button type="danger" icon="el-tag-delete" @click="showDeleteClassCourseDialog(scope.row.id,scope2.row)">删除</el-button>
-                  </template>
-                </el-table-column>
-              </el-table>
-            </div>
+            <el-form label-position="left" inline class="demo-table-expand">
+              <el-form-item label="课程名称:">
+                <span>{{ scope.row.name }}</span>
+              </el-form-item>
+              <el-form-item label="课程号:">
+                <span>{{ scope.row.number }}</span>
+              </el-form-item>
+              <el-form-item label="课程类型:">
+                <span>{{ scope.row.courseClass }}</span>
+              </el-form-item>
+              <el-form-item label="课程属性:">
+                <span>{{ scope.row.courseType }}</span>
+              </el-form-item>
+              <el-form-item label="课时:">
+                <span>{{ scope.row.time }}</span>
+              </el-form-item>
+              <el-form-item label="学分:">
+                <span>{{ scope.row.score }}</span>
+              </el-form-item>
+              <el-form-item label="学院:">
+                <span>{{ scope.row.courseDep }}</span>
+              </el-form-item>
+            </el-form>
           </template>
-        </el-table-column> -->
-        <el-table-column prop="id" width="50"></el-table-column>
+        </el-table-column>
+        <el-table-column prop="id" width="40"></el-table-column>
         <el-table-column prop="name" label="课程名" width="200">
         </el-table-column>
         <el-table-column prop="number" label="课程号" width="100">
         </el-table-column>
         <el-table-column prop="courseClass" label="类型" width="100">
         </el-table-column>
-        <el-table-column prop="score" label="学分" width="100">
+        <el-table-column prop="score" label="学分" width="80">
         </el-table-column>
-        <el-table-column prop="time" label="学时" width="100">
+        <el-table-column prop="time" label="课时" width="80">
         </el-table-column>
         <el-table-column prop="courseDep" label="学院" width="150">
         </el-table-column>
@@ -331,5 +334,16 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
+.demo-table-expand {
+    font-size: 0;
+  }
+  .demo-table-expand label {
+    width: 90px;
+    color: #99a9bf;
+  }
+  .demo-table-expand .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+  }
 </style>

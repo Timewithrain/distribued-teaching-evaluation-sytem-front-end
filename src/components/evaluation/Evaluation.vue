@@ -9,7 +9,7 @@
       <el-table class="evaluation-table" :data="summaryEvaluationList" style="width: 100%;margin-bottom: 20px;" row-key="id">
         <el-table-column type="expand">
           <template v-slot="scope">
-          <!-- 评价子表 -->
+            <!-- 评价子表 -->
             <div>
               <el-table :data="scope.row.supervisorEvaluationList.concat(scope.row.studentEvaluationList)" row-key="id">
                 <el-table-column type="index" label="序号" width="60"></el-table-column>
@@ -29,9 +29,9 @@
         <el-table-column type="index" label="序号" width="50"></el-table-column>
         <el-table-column prop="course.name" label="课程名" width="170">
         </el-table-column>
-        <el-table-column prop="course.number" label="课程号" width="100">
-        </el-table-column>
         <el-table-column prop="course.aclass.name" label="班级" width="90">
+        </el-table-column>
+        <el-table-column prop="course.teacher.name" label="教师" width="120">
         </el-table-column>
         <el-table-column prop="course.courseDep" label="学院" width="150">
         </el-table-column>
@@ -62,7 +62,6 @@
       </el-pagination>
       
     </el-card>
-
   </div>
 </template>
 
@@ -70,7 +69,6 @@
 export default {
   data() {
     return {
-      teacher: {},
       //总评页面分页参数
       summaryStartPage: 1,
       summaryPageSize: 5,
@@ -80,32 +78,11 @@ export default {
     }
   },
   created() {
-    this.getTeacherInfo()
+    this.getSummaryEvaluationList()
   },
   methods: {
-    async getTeacherInfo() {
-      const result = await this.$http.get('/user-manager/teacher/getTeacher')
-      if (result.status != 200){
-        return this.$message.error('获取个人信息失败！')
-      }
-      const t = result.data.data
-      if (t) {
-        this.teacher = t
-        //根据教师信息获取对应的总评列表
-        this.getSummaryEvaluationList()
-      } else {
-        //若无法获取个人信息则登陆超时，重新登陆
-        window.sessionStorage.clear();
-        const result = await this.$http.get('/user-manager/user/logout');
-        if (result.status != 200){
-          return this.$message.error('退出状态异常！');
-        }
-        this.$router.push('/login');
-        this.$message.success('登陆超时，请重新登录');
-      }
-    },
     async getSummaryEvaluationList() {
-      const result = await this.$http.get('/evaluation-manager/evaluation/listSummaryEvaluationByTeacherId?pageSize='+this.summaryPageSize+'&startPage='+this.summaryStartPage+'&teacherId='+this.teacher.id)
+      const result = await this.$http.get('/evaluation-manager/evaluation/listSummaryEvaluation?pageSize='+this.summaryPageSize+'&startPage='+this.summaryStartPage)
       if (result.status!=200){
         return this.$message.error('获取总评信息失败！')
       }
@@ -126,5 +103,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
+.el-textarea .el-textarea__inner{ // 然后找到对应的类名，在这里将拉伸去掉即可
+  resize: none;
+}
 </style>

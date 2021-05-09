@@ -20,7 +20,7 @@
             <el-row :gutter="24">
               <el-col :span="12">
                 <el-form-item label="姓名:" prop="name" style="margin-left: 10px;">
-                  <el-input v-model="studentInfoForm.name" :disabled="true" style="width: 300px"></el-input>
+                  <el-input v-model="studentInfoForm.name" :disabled="!isEditable" style="width: 300px"></el-input>
                 </el-form-item>
               </el-col>
               <el-col :span="12">
@@ -149,7 +149,7 @@ export default {
       //面板导航栏的位置
       tabPosition: 'left',
       //当前选中的页面
-      activeName: '',
+      activeName: '基本信息',
       isEditable: false,
       studentInfoFormRules: {
         region: [{ required: true, message: '请输入籍贯', trigger: 'blur' }],
